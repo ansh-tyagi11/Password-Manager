@@ -18,7 +18,7 @@ A simple password manager that allows users to store, edit, and delete password 
 
 1. Clone the repository:
     ```bash
-    git clone https://github.com/your-username/password-manager-local-app.git
+    git clone https://github.com/ansh-tyagi11/password-manager-local-app.git
     cd password-manager-local-app
     ```
 

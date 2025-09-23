@@ -13,8 +13,19 @@ const Manager = () => {
   }, [])
 
   const saveToLS = (passwordArray) => {
-    localStorage.setItem("display", JSON.stringify(passwordArray))
+    try {
+      localStorage.setItem("display", JSON.stringify(passwordArray))
+    } catch (e) {
+      console.error("Failed to save to localStorage", e);
+    }
   };
+
+  useEffect(() => {
+    let saved = JSON.parse(localStorage.getItem("display"));
+    if (saved) {
+      setDisplay(saved)
+    }
+  }, [])
 
   useEffect(() => {
     let saved = JSON.parse(localStorage.getItem("display"));
@@ -84,8 +95,8 @@ const Manager = () => {
             <input className='border md:w-[20vw] rounded-full py-2 px-1.5 my-2.5' type="password" name="password" id="password" placeholder='Password' value={input.password} onChange={handelChange} />
           </div>
           <span className='flex justify-between items-center'>
-            <button className='w-[80px] h-[40px] bg-blue-500 rounded-xl text-white text-bold ' onClick={add}>Add</button>
-            <button className='w-[80px] h-[40px] bg-red-600 rounded-xl text-white text-bold ' onClick={deleteAll}>Delete All</button>
+            <button className='w-[80px] h-[40px] bg-blue-500 rounded-xl text-white text-bold hover:cursor-pointer' onClick={add}>Add</button>
+            <button className='w-[80px] h-[40px] bg-red-600 rounded-xl text-white text-bold hover:cursor-pointer' onClick={deleteAll}>Delete All</button>
           </span>
         </div>
         <div className='md:border gap-5 flex justify-between rounded-full py-2 px-1.5 my-2.5'>
@@ -96,6 +107,7 @@ const Manager = () => {
         </div>
         {
           display.map((item, id) => {
+            if (!item || typeof item !== 'object' || !('input' in item)) return null;
             return (
 
               <div key={id}>
@@ -105,8 +117,8 @@ const Manager = () => {
                     <div>{item.input.username}</div>
                     <div>{item.input.password}</div>
                     <div className='flex gap-5'>
-                      <button onClick={(e) => editEvent(e, item.id)}>Edit</button>
-                      <button onClick={(e) => deleteEvent(e, item.id)}>Delete</button>
+                      <button className='hover:cursor-pointer' onClick={(e) => editEvent(e, item.id)}>Edit</button>
+                      <button className='hover:cursor-pointer' onClick={(e) => deleteEvent(e, item.id)}>Delete</button>
                     </div>
                   </div>
                 </div>

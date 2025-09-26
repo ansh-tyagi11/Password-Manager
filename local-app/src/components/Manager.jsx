@@ -133,9 +133,9 @@ const Manager = () => {
                       <td className="py-2 px-2 border border-white text-center">
                         <span>{item.input.password}</span>
                       </td>
-                      <td className="py-2 px-2 flex justify-center gap-4">
-                        <span className="hover:cursor-pointer text-black" onClick={(e) => editEvent(e, item.id)}>Edit</span>
-                        <span className="hover:cursor-pointer text-black" onClick={(e) => deleteEvent(e, item.id)}>Delete </span>
+                      <td className="py-2 px-2 border border-white text-centre justify-between gap-4">
+                        <span className="hover:cursor-pointer text-black p-1" onClick={(e) => editEvent(e, item.id)}>Edit</span>
+                        <span className="hover:cursor-pointer text-black p-1" onClick={(e) => deleteEvent(e, item.id)}>Delete </span>
                       </td>
                     </tr>
                   )

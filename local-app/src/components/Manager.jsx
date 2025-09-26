@@ -38,11 +38,11 @@ const Manager = () => {
     setInput({ ...input, [e.target.name]: e.target.value })
   }
 
-  const add = () => {
+  const save = () => {
     if (!input.text || !input.username || !input.password) {
       const missing = [];
-      if (!input.text) missing.push("URL");
-      if (!input.username) missing.push("Username");
+      if (!input.text) missing.push("Web Address");
+      if (!input.username) missing.push("User ID or Username");
       if (!input.password) missing.push("Password");
       alert(`Please fill: ${missing.join(", ")}`);
       return;
@@ -86,68 +86,90 @@ const Manager = () => {
 
   return (
     <>
-      <div className='min-h-[80vh] md:mx-[20vw] mx-[5vw]'>
+      <div className='min-h-[80vh] mx-[5vw] md:pb-[64px] md:px-[160px] md:mb-[18px] pb-[32px] mt-[10px] px-[40px]'>
+
+        <h1 className='font-bold md:text-3xl text-xl text-center'>
+          <span className='text-green-500'>&lt;</span>
+          <span>MyPassword</span>
+          <span className='text-green-500 font-bold md:text-3xl text-center text-xl'>Vault/&gt;</span>
+        </h1>
+        <div className='text-green-900 md:text-xl text-center'>A simple, secure vault for all your logins.</div>
 
         <div className='input'>
-          <input className='border w-full rounded-full py-2 px-1.5 my-2.5' ref={focus} type="text" name='text' value={input.text} id="text" placeholder="Enter the URL..." onChange={handelChange} />
+          <input className='border w-full rounded-full py-2 px-1.5 my-2.5' ref={focus} type="text" name='text' value={input.text} id="text" placeholder="Enter web address" onChange={handelChange} />
           <div className='flex justify-between md:gap-5 md:flex-row flex-col'>
-            <input className='border md:min-w-[30vw] rounded-full py-2 px-1.5 my-2.5' type="username" name="username" id="username" placeholder='Username' value={input.username} onChange={handelChange} />
+            <input className='border md:min-w-[30vw] rounded-full py-2 px-1.5 my-2.5' type="username" name="username" id="username" placeholder='User ID or Username' value={input.username} onChange={handelChange} />
             <input className='border md:w-[20vw] rounded-full py-2 px-1.5 my-2.5' type="password" name="password" id="password" placeholder='Password' value={input.password} onChange={handelChange} />
           </div>
           <span className='flex justify-between items-center'>
-            <button className='w-[80px] h-[40px] bg-blue-500 rounded-xl text-white text-bold hover:cursor-pointer' onClick={add}>Add</button>
+            <button className='w-[80px] h-[40px] bg-blue-500 rounded-xl text-white text-bold hover:cursor-pointer' onClick={save}>Save</button>
             <button className='w-[80px] h-[40px] bg-red-600 rounded-xl text-white text-bold hover:cursor-pointer' onClick={deleteAll}>Delete All</button>
           </span>
         </div>
-        <div className='md:border gap-5 flex justify-between rounded-full py-2 px-1.5 my-2.5'>
-          <div className='md:block hidden'>URL</div>
-          <div className='md:block hidden'>Username</div>
-          <div className='md:block hidden'>Password</div>
-          <div className='md:block hidden'></div>
-        </div>
+        <div><h1 className="text-2xl font-bold my-4">Your Passwords</h1></div>
+
         {
-          display.map((item, id) => {
-            if (!item || typeof item !== 'object' || !('input' in item)) return null;
-            return (
+          display.length === 0 ? (<div className="text-black mt-5">No passwords to show.</div>) : (
+            <>
 
-              <div key={id}>
-                <div className='md:block hidden'>
-                  <div className='border flex justify-between rounded-full py-2 px-1.5 my-2.5'>
-                    <div>{item.input.text}</div>
-                    <div>{item.input.username}</div>
-                    <div>{item.input.password}</div>
-                    <div className='flex gap-5'>
-                      <button className='hover:cursor-pointer' onClick={(e) => editEvent(e, item.id)}>Edit</button>
-                      <button className='hover:cursor-pointer' onClick={(e) => deleteEvent(e, item.id)}>Delete</button>
-                    </div>
-                  </div>
-                </div>
+              <table className="table-auto w-full rounded-md mb-10 overflow-x hidden md:block ">
+                <thead className="bg-green-800 text-white">
+                  <tr>
+                    <th className="py-2 w-1/4">Web Address</th>
+                    <th className="py-2 w-1/4">Username</th>
+                    <th className="py-2 w-1/4">Password</th>
+                    <th className="py-2 w-1/4">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {display.map((item, id) => (
+                    <tr key={id} className="bg-green-100 border-b text-center">
+                      <td className="py-2 px-2 border border-white text-center">
+                        <a href={item.input.text} target="_blank" rel="noopener noreferrer">{item.input.text}</a>
+                      </td>
+                      <td className="py-2 px-2 border border-white text-center">
+                        <span>{item.input.username}</span>
+                      </td>
+                      <td className="py-2 px-2 border border-white text-center">
+                        <span>{item.input.password}</span>
+                      </td>
+                      <td className="py-2 px-2 flex justify-center gap-4">
+                        <span className="hover:cursor-pointer text-black" onClick={(e) => editEvent(e, item.id)}>Edit</span>
+                        <span className="hover:cursor-pointer text-black" onClick={(e) => deleteEvent(e, item.id)}>Delete </span>
+                      </td>
+                    </tr>
+                  )
+                  )}
+                </tbody>
+              </table>
 
-                <div className='md:hidden block'>
-                  <div className='border rounded-2xl py-2 px-1.5 my-2.5'>
-                    <div>
-                      <span className='inline-block w-[80px]'>URL:</span>
-                      <span>{item.input.text}</span>
+              <div className="md:hidden block">
+                {display.map((item, id) => {
+                  if (!item || typeof item !== "object" || !("input" in item)) return null;
+                  return (
+                    <div key={id} className="border rounded-2xl py-2 px-3 my-2.5">
+                      <div>
+                        <span className="inline-block w-[80px]">URL:</span>
+                        <span>{item.input.text}</span>
+                      </div>
+                      <div>
+                        <span className="inline-block w-[80px]">User ID:</span>
+                        <span>{item.input.username}</span>
+                      </div>
+                      <div>
+                        <span className="inline-block w-[80px]">Password:</span>
+                        <span>{item.input.password}</span>
+                      </div>
+                      <div className="flex gap-5 justify-between mt-2">
+                        <button className="border bg-blue-500 text-white py-0.5 px-4 rounded-[10px]" onClick={(e) => editEvent(e, item.id)}>Edit</button>
+                        <button className="border bg-red-600 text-white py-0.5 px-4 rounded-[10px]" onClick={(e) => deleteEvent(e, item.id)}>Delete</button>
+                      </div>
                     </div>
-                    <div>
-                      <span className='inline-block w-[80px]'>Username:</span>
-                      <span>{item.input.username}</span>
-                    </div>
-                    <div>
-                      <span className='inline-block w-[80px]'>Password:</span>
-                      <span>{item.input.password}</span>
-                    </div>
-                    <div className='flex gap-5 justify-between'>
-                      <button className='border bg-blue-500 text-white py-0.5 px-4 rounded-[10px]' onClick={(e) => editEvent(e, item.id)}>Edit</button>
-                      <button className='border bg-red-600 text-white py-0.5 px-4 rounded-[10px]' onClick={(e) => deleteEvent(e, item.id)}>Delete</button>
-                    </div>
-                  </div>
-                </div>
-
+                  );
+                })}
               </div>
-
-            )
-          })
+            </>
+          )
         }
       </div >
     </>

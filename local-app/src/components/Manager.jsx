@@ -27,13 +27,6 @@ const Manager = () => {
     }
   }, [])
 
-  useEffect(() => {
-    let saved = JSON.parse(localStorage.getItem("display"));
-    if (saved) {
-      setDisplay(saved)
-    }
-  }, [])
-
   const handelChange = (e) => {
     setInput({ ...input, [e.target.name]: e.target.value })
   }
@@ -112,34 +105,40 @@ const Manager = () => {
           display.length === 0 ? (<div className="text-black mt-5">No passwords to show.</div>) : (
             <>
 
-              <table className="table-auto w-full rounded-md mb-10 overflow-x hidden md:block ">
+              <table className="table-fixed w-full rounded-md mb-10 hidden md:table">
+                <colgroup>
+                  <col style={{ width: '25%' }} />
+                  <col style={{ width: '25%' }} />
+                  <col style={{ width: '25%' }} />
+                  <col style={{ width: '25%' }} />
+                </colgroup>
                 <thead className="bg-green-800 text-white">
                   <tr>
-                    <th className="py-2 w-1/4">Web Address</th>
-                    <th className="py-2 w-1/4">Username</th>
-                    <th className="py-2 w-1/4">Password</th>
-                    <th className="py-2 w-1/4">Actions</th>
+                    <th className="py-2 px-2 text-centre">Web Address</th>
+                    <th className="py-2 px-2 text-centre">Username</th>
+                    <th className="py-2 px-2 text-centre">Password</th>
+                    <th className="py-2 px-2 text-centre">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {display.map((item, id) => (
-                    <tr key={id} className="bg-green-100 border-b text-center">
-                      <td className="py-2 px-2 border border-white text-center">
-                        <a href={item.input.text} target="_blank" rel="noopener noreferrer">{item.input.text}</a>
+
+                    <tr key={item.id ?? id} className="bg-green-100 border-b align-top">
+                      <td className="py-2 px-2 border border-white text-center break-words whitespace-normal max-w-[1px]">
+                        <a className="break-words text-centre" href={item.input.text} target="_blank" rel="noopener noreferrer">{item.input.text}</a>
+                      </td>
+                      <td className="py-2 px-2 border border-white text-left truncate max-w-[150px]">
+                        <span className="inline-block w-full overflow-hidden text-center whitespace-nowrap">{item.input.username}</span>
+                      </td>
+                      <td className="py-2 px-2 border border-white text-left truncate max-w-[150px]">
+                        <span className="inline-block w-full overflow-hidden text-center whitespace-nowrap">{item.input.password}</span>
                       </td>
                       <td className="py-2 px-2 border border-white text-center">
-                        <span>{item.input.username}</span>
-                      </td>
-                      <td className="py-2 px-2 border border-white text-center">
-                        <span>{item.input.password}</span>
-                      </td>
-                      <td className="py-2 px-2 border border-white text-centre justify-between gap-4">
                         <span className="hover:cursor-pointer text-black p-1" onClick={(e) => editEvent(e, item.id)}>Edit</span>
-                        <span className="hover:cursor-pointer text-black p-1" onClick={(e) => deleteEvent(e, item.id)}>Delete </span>
+                        <span className="hover:cursor-pointer text-black p-1" onClick={(e) => deleteEvent(e, item.id)}>Delete</span>
                       </td>
                     </tr>
-                  )
-                  )}
+                  ))}
                 </tbody>
               </table>
 

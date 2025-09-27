@@ -70,6 +70,9 @@ const Manager = () => {
     saveToLS(newPassword)
   }
 
+  const handleCopy = (textToCopy) => {
+    navigator.clipboard.writeText(textToCopy);
+  }
   const deleteAll = () => {
     let c = confirm("Are you sure you want to delete all these passwords? They cannot be restored once deleted.")
     if (!c) return;
@@ -121,24 +124,30 @@ const Manager = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {display.map((item, id) => (
-
-                    <tr key={item.id ?? id} className="bg-green-100 border-b align-top">
-                      <td className="py-2 px-2 border border-white text-center break-words whitespace-normal max-w-[1px]">
-                        <a className="break-words text-centre" href={item.input.text} target="_blank" rel="noopener noreferrer">{item.input.text}</a>
-                      </td>
-                      <td className="py-2 px-2 border border-white text-left truncate max-w-[150px]">
-                        <span className="inline-block w-full overflow-hidden text-center whitespace-nowrap">{item.input.username}</span>
-                      </td>
-                      <td className="py-2 px-2 border border-white text-left truncate max-w-[150px]">
-                        <span className="inline-block w-full overflow-hidden text-center whitespace-nowrap">{item.input.password}</span>
-                      </td>
-                      <td className="py-2 px-2 border border-white text-center">
-                        <span className="hover:cursor-pointer text-black p-1" onClick={(e) => editEvent(e, item.id)}>Edit</span>
-                        <span className="hover:cursor-pointer text-black p-1" onClick={(e) => deleteEvent(e, item.id)}>Delete</span>
-                      </td>
-                    </tr>
-                  ))}
+                  {display.map((item, id) => {
+                    if (!item || typeof item !== "object" || !("input" in item)) return null;
+                    return (
+                      <tr key={id} className="bg-green-100 border-b align-top">
+                        <td className="py-2 px-2 border border-white text-center break-words whitespace-normal max-w-[1px]">
+                          <a className="break-words text-centre" href={item.input.text} target="_blank" rel="noopener noreferrer">{item.input.text}</a>
+                          <span onClick={() => handleCopy(item.input.text)}>Copy</span>
+                        </td>
+                        <td className="gap-2.5 py-2 px-2 border border-white text-center max-w-[150px] break-words">
+                          <span className="inline-block w-full overflow-auto text-center whitespace-wrap">{item.input.username}</span>
+                          <span onClick={() => handleCopy(item.input.username)}>Copy</span>
+                        </td>
+                        <td className="py-2 px-2 border border-white text-center max-w-[150px] break-words">
+                          <span className="inline-block w-full overflow-hidden text-center whitespace-wrap">{item.input.password}</span>
+                          <span onClick={() => handleCopy(item.input.password)}>Copy</span>
+                        </td>
+                        <td className="py-2 px-2 border border-white text-center">
+                          <span className="hover:cursor-pointer text-black p-1" onClick={(e) => editEvent(e, item.id)}>Edit</span>
+                          <span className="hover:cursor-pointer text-black p-1" onClick={(e) => deleteEvent(e, item.id)}>Delete</span>
+                        </td>
+                      </tr>
+                    )
+                  }
+                  )}
                 </tbody>
               </table>
 
@@ -147,18 +156,45 @@ const Manager = () => {
                   if (!item || typeof item !== "object" || !("input" in item)) return null;
                   return (
                     <div key={id} className="border rounded-2xl py-2 px-3 my-2.5">
-                      <div>
-                        <span className="inline-block w-[80px]">URL:</span>
-                        <span>{item.input.text}</span>
+                      <div className='relative' >
+                        <span className="inline-table w-[100px]">Web Address:</span>
+                        <span className='break-all'>{item.input.text}</span>
+                        <span className='hover:cursor-pointer group absolute right-0' onClick={() => handleCopy(item.input.text)}>
+                          <lord-icon
+                            style={{ "width": "25px", "height": "25px", "paddingTop": "3px", "paddingLeft": "3px" }}
+                            src="https://cdn.lordicon.com/iykgtsbt.json"
+                            trigger="hover" >
+                          </lord-icon>
+                          <span className='hidden absolute right-[20px] bottom-[30px] group-hover:inline-block ml-1 text-xs bg-gray-200 px-1 rounded'>Copy</span>
+                        </span>
                       </div>
-                      <div>
-                        <span className="inline-block w-[80px]">User ID:</span>
-                        <span>{item.input.username}</span>
+
+                      <div className='relative'>
+                        <span className="inline-table w-[70px]">User ID:</span>
+                        <span className='break-all'>{item.input.username}</span>
+                        <span className='hover:cursor-pointer pl-[50px] group absolute right-0' onClick={() => handleCopy(item.input.username)}>
+                          <lord-icon
+                            style={{ "width": "25px", "height": "25px", "paddingTop": "3px", "paddingLeft": "3px" }}
+                            src="https://cdn.lordicon.com/iykgtsbt.json"
+                            trigger="hover" >
+                          </lord-icon>
+                          <span className='hidden absolute right-[20px] bottom-[30px] group-hover:inline-block ml-1 text-xs bg-gray-200 px-1 rounded'>Copy</span>
+                        </span>
                       </div>
-                      <div>
-                        <span className="inline-block w-[80px]">Password:</span>
-                        <span>{item.input.password}</span>
+
+                      <div className='relative'>
+                        <span className="inline-block w-[70px]">Password:</span>
+                        <span className='break-all'>{item.input.password}</span>
+                        <span className='hover:cursor-pointer group pl-[50px] absolute right-0' onClick={() => handleCopy(item.input.password)}>
+                          <lord-icon
+                            style={{ "width": "25px", "height": "25px", "paddingTop": "3px", "paddingLeft": "3px" }}
+                            src="https://cdn.lordicon.com/iykgtsbt.json"
+                            trigger="hover" >
+                          </lord-icon>
+                          <span className='hidden absolute right-[20px] bottom-[30px] group-hover:inline-block ml-1 text-xs bg-gray-200 px-1 rounded'>Copy</span>
+                        </span>
                       </div>
+                      
                       <div className="flex gap-5 justify-between mt-2">
                         <button className="border bg-blue-500 text-white py-0.5 px-4 rounded-[10px]" onClick={(e) => editEvent(e, item.id)}>Edit</button>
                         <button className="border bg-red-600 text-white py-0.5 px-4 rounded-[10px]" onClick={(e) => deleteEvent(e, item.id)}>Delete</button>

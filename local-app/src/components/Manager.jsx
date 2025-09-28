@@ -80,6 +80,16 @@ const Manager = () => {
     saveToLS([])
   }
 
+  const safeHref = (raw) => {
+    try {
+      const url = new URL(raw);
+      return (url.protocol === "http:" || url.protocol === "https:") ? raw : "#";
+    } catch {
+      return "#";
+    }
+  }
+
+
   return (
     <>
       <div className='min-h-[80vh] mx-[5vw] md:pb-[64px] md:px-[160px] md:mb-[18px] pb-[32px] mt-[10px] px-[40px]'>
@@ -89,20 +99,57 @@ const Manager = () => {
           <span>MyPassword</span>
           <span className='text-green-500 font-bold md:text-3xl text-center text-xl'>Vault/&gt;</span>
         </h1>
+
         <div className='text-green-900 md:text-xl text-center'>A simple, secure vault for all your logins.</div>
 
         <div className='input'>
-          <input className='border w-full rounded-full py-2 px-1.5 my-2.5' ref={focus} type="text" name='text' value={input.text} id="text" placeholder="Enter web address" onChange={handelChange} />
+          <input className='border w-full rounded-full py-2 px-1.5 my-2.5'
+            ref={focus}
+            type="text"
+            name='text'
+            value={input.text}
+            id="text"
+            placeholder="Enter web address"
+            onChange={handelChange} />
+
           <div className='flex justify-between md:gap-5 md:flex-row flex-col'>
-            <input className='border md:min-w-[30vw] rounded-full py-2 px-1.5 my-2.5' type="username" name="username" id="username" placeholder='User ID or Username' value={input.username} onChange={handelChange} />
-            <input className='border md:w-[20vw] rounded-full py-2 px-1.5 my-2.5' type="password" name="password" id="password" placeholder='Password' value={input.password} onChange={handelChange} />
+            <input className='border md:min-w-[30vw] rounded-full py-2 px-1.5 my-2.5'
+              type="username"
+              name="username"
+              id="username"
+              placeholder='User ID or Username'
+              value={input.username}
+              onChange={handelChange} />
+
+            <input className='border md:w-[20vw] rounded-full py-2 px-1.5 my-2.5'
+              type="password"
+              name="password"
+              id="password"
+              placeholder='Password'
+              value={input.password}
+              onChange={handelChange} />
+
           </div>
-          <span className='flex justify-between items-center'>
-            <button className='w-[80px] h-[40px] bg-blue-500 rounded-xl text-white text-bold hover:cursor-pointer' onClick={save}>Save</button>
-            <button className='w-[80px] h-[40px] bg-red-600 rounded-xl text-white text-bold hover:cursor-pointer' onClick={deleteAll}>Delete All</button>
+
+          <span className='group flex justify-between items-center'>
+
+            <button className='flex items-center bg-green-400 w-fit h-[40px] md:py-2 md:px-8 px-4 rounded-full border border-black text-bold group-hover:cursor-pointer hover:bg-green-300' onClick={save}>
+              <lord-icon
+                src="https://cdn.lordicon.com/jgnvfzqg.json"
+                trigger="hover" >
+              </lord-icon>
+              Save
+            </button>
+
+            <button className='w-fit md:py-2 md:px-8 px-4 h-[40px] bg-red-600 rounded-full border border-black text-white text-bold hover:cursor-pointer' onClick={deleteAll}>Delete All</button>
+
           </span>
+
         </div>
-        <div><h1 className="text-2xl font-bold my-4">Your Passwords</h1></div>
+
+        <div>
+          <h1 className="text-2xl font-bold my-4">Your Passwords</h1>
+        </div>
 
         {
           display.length === 0 ? (<div className="text-black mt-5">No passwords to show.</div>) : (
@@ -115,6 +162,7 @@ const Manager = () => {
                   <col style={{ width: '25%' }} />
                   <col style={{ width: '25%' }} />
                 </colgroup>
+
                 <thead className="bg-green-800 text-white">
                   <tr>
                     <th className="py-2 px-2 text-centre">Web Address</th>
@@ -123,26 +171,68 @@ const Manager = () => {
                     <th className="py-2 px-2 text-centre">Actions</th>
                   </tr>
                 </thead>
+
                 <tbody>
                   {display.map((item, id) => {
                     if (!item || typeof item !== "object" || !("input" in item)) return null;
+
                     return (
                       <tr key={id} className="bg-green-100 border-b align-top">
-                        <td className="py-2 px-2 border border-white text-center break-words whitespace-normal max-w-[1px]">
-                          <a className="break-words text-centre" href={item.input.text} target="_blank" rel="noopener noreferrer">{item.input.text}</a>
-                          <span onClick={() => handleCopy(item.input.text)}>Copy</span>
+
+                        <td className="relative py-2 px-2 border border-white text-center break-words whitespace-normal max-w-[1px]">
+                          <a className="break-words text-centre" href={safeHref(item.input.text)} target="_blank" rel="noopener noreferrer">{item.input.text}</a>
+                          <span className='group hover:cursor-pointer absolute right-0' onClick={() => handleCopy(item.input.text)}>
+                            <lord-icon
+                              style={{ "width": "25px", "height": "25px", "paddingTop": "3px", "paddingLeft": "3px" }}
+                              src="https://cdn.lordicon.com/iykgtsbt.json"
+                              trigger="hover" >
+                            </lord-icon>
+                            <span className='hidden absolute right-[20px] bottom-[30px] group-hover:inline-block ml-1 text-xs bg-gray-200 px-1 rounded'>Copy</span>
+                          </span>
                         </td>
-                        <td className="gap-2.5 py-2 px-2 border border-white text-center max-w-[150px] break-words">
-                          <span className="inline-block w-full overflow-auto text-center whitespace-wrap">{item.input.username}</span>
-                          <span onClick={() => handleCopy(item.input.username)}>Copy</span>
+
+                        <td className="relative  py-2 px-2 border border-white text-center max-w-[150px] break-words">
+                          <span className="break-words w-full overflow-hidden text-center whitespace-wrap">{item.input.username}</span>
+                          <span className='group hover:cursor-pointer absolute right-0' onClick={() => handleCopy(item.input.username)}>
+                            <lord-icon
+                              style={{ "width": "25px", "height": "25px", "paddingTop": "3px", "paddingLeft": "3px" }}
+                              src="https://cdn.lordicon.com/iykgtsbt.json"
+                              trigger="hover" >
+                            </lord-icon>
+                            <span className='hidden absolute right-[20px] bottom-[30px] group-hover:inline-block ml-1 text-xs bg-gray-200 px-1 rounded'>Copy</span>
+                          </span>
                         </td>
-                        <td className="py-2 px-2 border border-white text-center max-w-[150px] break-words">
-                          <span className="inline-block w-full overflow-hidden text-center whitespace-wrap">{item.input.password}</span>
-                          <span onClick={() => handleCopy(item.input.password)}>Copy</span>
+
+                        <td className="relative py-2 px-2 border border-white text-center max-w-[150px] break-words">
+                          <span className="w-full overflow-hidden text-center whitespace-wrap">{item.input.password}</span>
+                          <span className='group hover:cursor-pointer absolute right-0' onClick={() => handleCopy(item.input.password)}>
+                            <lord-icon
+                              style={{ "width": "25px", "height": "25px", "paddingTop": "3px", "paddingLeft": "3px" }}
+                              src="https://cdn.lordicon.com/iykgtsbt.json"
+                              trigger="hover" >
+                            </lord-icon>
+                            <span className='hidden absolute right-[20px] bottom-[30px] group-hover:inline-block ml-1 text-xs bg-gray-200 px-1 rounded'>Copy</span>
+                          </span>
                         </td>
+
                         <td className="py-2 px-2 border border-white text-center">
-                          <span className="hover:cursor-pointer text-black p-1" onClick={(e) => editEvent(e, item.id)}>Edit</span>
-                          <span className="hover:cursor-pointer text-black p-1" onClick={(e) => deleteEvent(e, item.id)}>Delete</span>
+                          <span className="relative hover:cursor-pointer text-black p-1 group" onClick={(e) => editEvent(e, item.id)}>
+                            <lord-icon
+                              src="https://cdn.lordicon.com/gwlusjdu.json"
+                              trigger="hover"
+                              style={{ "width": "25px", "height": "25px" }}>
+                            </lord-icon>
+                            <span className='hidden absolute right-[20px] bottom-[30px] group-hover:inline-block ml-1 text-xs bg-gray-200 px-1 rounded'>Edit</span>
+                          </span>
+
+                          <span className="group relative hover:cursor-pointer text-black p-1" onClick={(e) => deleteEvent(e, item.id)}>
+                            <lord-icon
+                              src="https://cdn.lordicon.com/skkahier.json"
+                              trigger="hover"
+                              style={{ "width": "25px", "height": "25px" }}>
+                            </lord-icon>
+                            <span className='hidden absolute right-[20px] bottom-[30px] group-hover:inline-block ml-1 text-xs bg-gray-200 px-1 rounded'>Delete</span>
+                          </span>
                         </td>
                       </tr>
                     )
@@ -156,6 +246,7 @@ const Manager = () => {
                   if (!item || typeof item !== "object" || !("input" in item)) return null;
                   return (
                     <div key={id} className="border rounded-2xl py-2 px-3 my-2.5">
+
                       <div className='relative' >
                         <span className="inline-table w-[100px]">Web Address:</span>
                         <span className='break-all'>{item.input.text}</span>
@@ -194,10 +285,27 @@ const Manager = () => {
                           <span className='hidden absolute right-[20px] bottom-[30px] group-hover:inline-block ml-1 text-xs bg-gray-200 px-1 rounded'>Copy</span>
                         </span>
                       </div>
-                      
+
                       <div className="flex gap-5 justify-between mt-2">
-                        <button className="border bg-blue-500 text-white py-0.5 px-4 rounded-[10px]" onClick={(e) => editEvent(e, item.id)}>Edit</button>
-                        <button className="border bg-red-600 text-white py-0.5 px-4 rounded-[10px]" onClick={(e) => deleteEvent(e, item.id)}>Delete</button>
+
+                        <button className="group relative bg-green-400  py-0.5 px-4 rounded-[10px]" onClick={(e) => editEvent(e, item.id)}>
+                          <lord-icon
+                            src="https://cdn.lordicon.com/gwlusjdu.json"
+                            trigger="hover"
+                            style={{ "width": "25px", "height": "25px" }}>
+                          </lord-icon>
+                          <span className='hidden absolute right-[20px] bottom-[30px] group-hover:inline-block ml-1 text-xs bg-gray-200 px-1 rounded'>Edit</span>
+                        </button>
+
+                        <button className="group relative bg-red-600 py-0.5 px-4 rounded-[10px]" onClick={(e) => deleteEvent(e, item.id)}>
+                          <lord-icon
+                            src="https://cdn.lordicon.com/skkahier.json"
+                            trigger="hover"
+                            style={{ "width": "25px", "height": "25px" }}>
+                          </lord-icon>
+                          <span className='hidden absolute right-[20px] bottom-[30px] group-hover:inline-block ml-1 text-xs bg-gray-200 px-1 rounded'>Delete</span>
+                        </button>
+
                       </div>
                     </div>
                   );

@@ -1,46 +1,70 @@
-# Password Manager Local App
+# 🛡️ Password Manager (Local Storage Version)
 
-A simple password manager that allows users to store, edit, and delete password data for different websites.
+A simple and interactive **Password Manager** built with **React + Vite** that allows users to:
 
-## Features
+- ➕ Add passwords  
+- ✏️ Edit passwords  
+- ❌ Delete passwords  
+- ✅ Mark passwords as used/finished  
+- 📂 View all saved passwords  
 
-- Add website name and password
-- Edit existing entries
-- Delete entries
+All data is stored in **localStorage**, so your passwords remain even after refreshing or closing the browser.  
 
-## Getting Started
+---
 
-### Prerequisites
+## 🚀 Features
 
-- [Node.js](https://nodejs.org/) installed
+- **Add Passwords**: Quickly save username and password combinations.  
+- **Edit Passwords**: Update existing entries.  
+- **Delete Passwords**: Remove passwords you no longer need.  
+- **Mark as Finished**: Track used or expired passwords.  
+- **Copy Passwords**: Copy passwords directly with the **copy icon**.  
+- **Interactive Icons**: Animated icons using **Lordicons**.  
+- **Unique IDs**: Each entry has a unique ID generated with **UUID**.  
 
-### Installation
+---
+
+## 🛠️ Tech Stack
+
+- [React](https://react.dev/) – UI library  
+- [Vite](https://vite.dev/) – Fast development & build tool  
+- [TailwindCSS](https://tailwindcss.com/) – Styling  
+- [localStorage](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage) – Data persistence  
+- [Lordicons](https://lordicon.com/) – Animated icons  
+- [UUID](https://www.npmjs.com/package/uuid) – Unique identifiers  
+
+---
+
+## 📂 Project Setup
 
 1. Clone the repository:
-    ```bash
-    git clone https://github.com/ansh-tyagi11/password-manager-local-app.git
-    cd password-manager-local-app
-    ```
+   ```bash
+   git clone https://github.com/ansh-tyagi11/Password-Manager.git
+   ```
+2. Navigate to the project folder:
+   ```bash
+   cd Password-Manager
+   ```
+3. Install dependencies:
+   ```bash
+   npm install
+   npm install uuid
+   ```
 
-2. Install dependencies:
-    ```bash
-    npm install
-    ```
-
-### Running Locally
-
-Start the application:
-```bash
-npm start
-```
-
-Open your browser and navigate to `http://localhost:5173` to use the app.
-
+4. Start the development server:
+   ```bash
+   npm run dev
+   ```
+5. Open in your browser:
+   ```arduino
+   http://localhost:5173/
+   ```
 ## Usage
-
-1. Enter the website name and password to add a new entry.
-2. Use the edit button to update an existing password.
-3. Use the delete button to remove an entry.
+- Enter the username, password, and any notes.
+- Click Add to store it in localStorage.
+- Use the edit button to update an entry.
+- Use the delete button to remove it.
+- Copy passwords directly with the copy icon.
 
 ## License
 

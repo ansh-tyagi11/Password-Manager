@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { use } from 'react'
 import { useState, useRef, useEffect } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -12,26 +12,21 @@ const Manager = () => {
     focus.current.focus()
   }, [])
 
-  const saveToLS = (passwordArray) => {
-    try {
-      localStorage.setItem("display", JSON.stringify(passwordArray))
-    } catch (e) {
-      console.error("Failed to save to localStorage", e);
-    }
-  };
-
   useEffect(() => {
-    let saved = JSON.parse(localStorage.getItem("display"));
-    if (saved) {
-      setDisplay(saved)
-    }
+    getPasswords()
   }, [])
+
+  const getPasswords = async () => {
+    let req = await fetch("http://localhost:3000/")
+    let passwords = await req.json()
+    setDisplay(passwords)
+  }
 
   const handelChange = (e) => {
     setInput({ ...input, [e.target.name]: e.target.value })
   }
 
-  const save = () => {
+  const save = async () => {
     if (!input.text || !input.username || !input.password) {
       const missing = [];
       if (!input.text) missing.push("Web Address");
@@ -41,14 +36,22 @@ const Manager = () => {
       return;
     }
 
-    let newPassword = [...display, { id: uuidv4(), input }]
+    let newEntry = { id: uuidv4(), input };
+    let newPassword = [...display, newEntry]
     setDisplay(newPassword)
     setInput({ text: "", username: "", password: "" })
-    saveToLS(newPassword)
-    onSubmit(input);
+
+    const payload = {
+      id: newEntry.id,
+      text: input.text,
+      username: input.username,
+      password: input.password
+    };
+
+    onSubmit(payload)
   }
 
-  function editEvent(_, id) {
+  const editEvent = async (id) => {
     let edit = display.find((item) => {
       return item.id === id;
     });
@@ -56,18 +59,32 @@ const Manager = () => {
       setInput(edit.input);
       const newPassword = display.filter((item) => item.id !== id);
       setDisplay(newPassword);
-      saveToLS(newPassword);
     }
+    await fetch("http://localhost:3000/", {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ id })
+    })
   }
 
-  const deleteEvent = (_, id) => {
+  const deleteEvent = async (id) => {
     let c = confirm("Are you sure you want to delete this password?")
     if (!c) return;
     let newPassword = display.filter((item) => {
       return item.id !== id;
     })
     setDisplay(newPassword)
-    saveToLS(newPassword)
+
+    await fetch("http://localhost:3000/", {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ id })
+    })
+
   }
 
   const handleCopy = (textToCopy) => {
@@ -77,7 +94,6 @@ const Manager = () => {
     let c = confirm("Are you sure you want to delete all these passwords? They cannot be restored once deleted.")
     if (!c) return;
     setDisplay([])
-    saveToLS([])
   }
 
   const safeHref = (raw) => {
@@ -91,16 +107,15 @@ const Manager = () => {
 
 
   const onSubmit = async (data) => {
-    //  to send the data to backend
+
     let r = await fetch("http://localhost:3000/", {
       method: "POST",
       headers: {
-        "Content-Type": "application/json" // <-- Add this line
+        "Content-Type": "application/json"
       },
       body: JSON.stringify(data)
     })
     let res = await r.text()
-    console.log(data, res)
   }
 
   return (
@@ -187,14 +202,14 @@ const Manager = () => {
 
                 <tbody>
                   {display.map((item, id) => {
-                    if (!item || typeof item !== "object" || !("input" in item)) return null;
+                    // if (!item || typeof item !== "object" || !("input" in item)) return null;
 
                     return (
                       <tr key={id} className="bg-green-100 border-b align-top">
 
                         <td className="relative py-2 px-2 border border-white text-center break-words whitespace-normal max-w-[1px]">
-                          <a className="break-words text-centre" href={safeHref(item.input.text)} target="_blank" rel="noopener noreferrer">{item.input.text}</a>
-                          <span className='group hover:cursor-pointer absolute right-0' onClick={() => handleCopy(item.input.text)}>
+                          <a className="break-words text-centre" href={safeHref(item.text)} target="_blank" rel="noopener noreferrer">{item.text}</a>
+                          <span className='group hover:cursor-pointer absolute right-0' onClick={() => handleCopy(item.text)}>
                             <lord-icon
                               style={{ "width": "25px", "height": "25px", "paddingTop": "3px", "paddingLeft": "3px" }}
                               src="https://cdn.lordicon.com/iykgtsbt.json"
@@ -205,8 +220,8 @@ const Manager = () => {
                         </td>
 
                         <td className="relative  py-2 px-2 border border-white text-center max-w-[150px] break-words">
-                          <span className="break-words w-full overflow-hidden text-center whitespace-wrap">{item.input.username}</span>
-                          <span className='group hover:cursor-pointer absolute right-0' onClick={() => handleCopy(item.input.username)}>
+                          <span className="break-words w-full overflow-hidden text-center whitespace-wrap">{item.username}</span>
+                          <span className='group hover:cursor-pointer absolute right-0' onClick={() => handleCopy(item.username)}>
                             <lord-icon
                               style={{ "width": "25px", "height": "25px", "paddingTop": "3px", "paddingLeft": "3px" }}
                               src="https://cdn.lordicon.com/iykgtsbt.json"
@@ -217,8 +232,8 @@ const Manager = () => {
                         </td>
 
                         <td className="relative py-2 px-2 border border-white text-center max-w-[150px] break-words">
-                          <span className="w-full overflow-hidden text-center whitespace-wrap">{item.input.password}</span>
-                          <span className='group hover:cursor-pointer absolute right-0' onClick={() => handleCopy(item.input.password)}>
+                          <span className="w-full overflow-hidden text-center whitespace-wrap">{item.password}</span>
+                          <span className='group hover:cursor-pointer absolute right-0' onClick={() => handleCopy(item.password)}>
                             <lord-icon
                               style={{ "width": "25px", "height": "25px", "paddingTop": "3px", "paddingLeft": "3px" }}
                               src="https://cdn.lordicon.com/iykgtsbt.json"
@@ -229,7 +244,7 @@ const Manager = () => {
                         </td>
 
                         <td className="py-2 px-2 border border-white text-center">
-                          <span className="relative hover:cursor-pointer text-black p-1 group" onClick={(e) => editEvent(e, item.id)}>
+                          <span className="relative hover:cursor-pointer text-black p-1 group" onClick={() => editEvent(id)}>
                             <lord-icon
                               src="https://cdn.lordicon.com/gwlusjdu.json"
                               trigger="hover"
@@ -238,7 +253,7 @@ const Manager = () => {
                             <span className='hidden absolute right-[20px] bottom-[30px] group-hover:inline-block ml-1 text-xs bg-gray-200 px-1 rounded'>Edit</span>
                           </span>
 
-                          <span className="group relative hover:cursor-pointer text-black p-1" onClick={(e) => deleteEvent(e, item.id)}>
+                          <span className="group relative hover:cursor-pointer text-black p-1" onClick={() => deleteEvent(item.id)}>
                             <lord-icon
                               src="https://cdn.lordicon.com/skkahier.json"
                               trigger="hover"

@@ -36,16 +36,25 @@ const Manager = () => {
       return;
     }
 
-    let newEntry = { id: uuidv4(), input };
+    let newEntry = {
+      id: uuidv4(),
+      input: {
+        text: input.text,
+        username: input.username,
+        password: input.password
+      }
+    };
     let newPassword = [...display, newEntry]
     setDisplay(newPassword)
     setInput({ text: "", username: "", password: "" })
 
     const payload = {
       id: newEntry.id,
-      text: input.text,
-      username: input.username,
-      password: input.password
+      input: {
+        text: input.text,
+        username: input.username,
+        password: input.password
+      }
     };
 
     onSubmit(payload)
@@ -60,13 +69,6 @@ const Manager = () => {
       const newPassword = display.filter((item) => item.id !== id);
       setDisplay(newPassword);
     }
-    await fetch("http://localhost:3000/", {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ id })
-    })
   }
 
   const deleteEvent = async (id) => {
@@ -116,6 +118,7 @@ const Manager = () => {
       body: JSON.stringify(data)
     })
     let res = await r.text()
+    console.log(data)
   }
 
   return (
@@ -208,8 +211,8 @@ const Manager = () => {
                       <tr key={id} className="bg-green-100 border-b align-top">
 
                         <td className="relative py-2 px-2 border border-white text-center break-words whitespace-normal max-w-[1px]">
-                          <a className="break-words text-centre" href={safeHref(item.text)} target="_blank" rel="noopener noreferrer">{item.text}</a>
-                          <span className='group hover:cursor-pointer absolute right-0' onClick={() => handleCopy(item.text)}>
+                          <a className="break-words text-centre" href={safeHref(item.input.text)} target="_blank" rel="noopener noreferrer">{item.input.text}</a>
+                          <span className='group hover:cursor-pointer absolute right-0' onClick={() => handleCopy(item.input.text)}>
                             <lord-icon
                               style={{ "width": "25px", "height": "25px", "paddingTop": "3px", "paddingLeft": "3px" }}
                               src="https://cdn.lordicon.com/iykgtsbt.json"
@@ -220,8 +223,8 @@ const Manager = () => {
                         </td>
 
                         <td className="relative  py-2 px-2 border border-white text-center max-w-[150px] break-words">
-                          <span className="break-words w-full overflow-hidden text-center whitespace-wrap">{item.username}</span>
-                          <span className='group hover:cursor-pointer absolute right-0' onClick={() => handleCopy(item.username)}>
+                          <span className="break-words w-full overflow-hidden text-center whitespace-wrap">{item.input.username}</span>
+                          <span className='group hover:cursor-pointer absolute right-0' onClick={() => handleCopy(item.input.username)}>
                             <lord-icon
                               style={{ "width": "25px", "height": "25px", "paddingTop": "3px", "paddingLeft": "3px" }}
                               src="https://cdn.lordicon.com/iykgtsbt.json"
@@ -232,8 +235,8 @@ const Manager = () => {
                         </td>
 
                         <td className="relative py-2 px-2 border border-white text-center max-w-[150px] break-words">
-                          <span className="w-full overflow-hidden text-center whitespace-wrap">{item.password}</span>
-                          <span className='group hover:cursor-pointer absolute right-0' onClick={() => handleCopy(item.password)}>
+                          <span className="w-full overflow-hidden text-center whitespace-wrap">{item.input.password}</span>
+                          <span className='group hover:cursor-pointer absolute right-0' onClick={() => handleCopy(item.input.password)}>
                             <lord-icon
                               style={{ "width": "25px", "height": "25px", "paddingTop": "3px", "paddingLeft": "3px" }}
                               src="https://cdn.lordicon.com/iykgtsbt.json"

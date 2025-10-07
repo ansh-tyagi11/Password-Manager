@@ -45,7 +45,7 @@ const Manager = () => {
     setDisplay(newPassword)
     setInput({ text: "", username: "", password: "" })
     saveToLS(newPassword)
-
+    onSubmit(input);
   }
 
   function editEvent(_, id) {
@@ -89,6 +89,19 @@ const Manager = () => {
     }
   }
 
+
+  const onSubmit = async (data) => {
+    //  to send the data to backend
+    let r = await fetch("http://localhost:3000/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json" // <-- Add this line
+      },
+      body: JSON.stringify(data)
+    })
+    let res = await r.text()
+    console.log(data, res)
+  }
 
   return (
     <>

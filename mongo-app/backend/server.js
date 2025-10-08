@@ -8,7 +8,7 @@ const port = 3000
 
 dotenv.config();
 
-const url = process.env.MONGO_URL;
+const url = process.env.MONGO_URI;
 const client = new MongoClient(url);
 client.connect();
 
@@ -48,6 +48,19 @@ app.delete('/', async (req, res) => {
     const collection = db.collection('passwords');
     const findPassword = await collection.deleteOne(password);
     res.send({ success: true, result: findPassword })
+})
+
+app.delete('/deleteAll', async (req, res) => {
+    try {
+        const password = req.body
+        const db = client.db(dbName);
+        const collection = db.collection('passwords');
+        const findPassword = await collection.deleteMany(password);
+        res.send({ success: true, result: findPassword })
+        res.status(200).json({ message: "All passwords deleted successfully" });
+    } catch (err) {
+        res.status(500).json({ error: "Failed to delete passwords" });
+    }
 })
 
 app.listen(port, () => {

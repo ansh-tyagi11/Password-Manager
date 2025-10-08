@@ -64,6 +64,15 @@ const Manager = () => {
     let edit = display.find((item) => {
       return item.id === id;
     });
+
+    await fetch("http://localhost:3000/", {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ id })
+    })
+
     if (edit) {
       setInput(edit.input);
       const newPassword = display.filter((item) => item.id !== id);
@@ -92,10 +101,24 @@ const Manager = () => {
   const handleCopy = (textToCopy) => {
     navigator.clipboard.writeText(textToCopy);
   }
-  const deleteAll = () => {
+
+  const deleteAll = async () => {
     let c = confirm("Are you sure you want to delete all these passwords? They cannot be restored once deleted.")
     if (!c) return;
-    setDisplay([])
+
+    try {
+      const res = await fetch("http://localhost:3000/deleteAll", {
+        method: "DELETE",
+      })
+      if (!res.ok) {
+        alert("Failed to delete all passwords. Please try again.");
+        return;
+      }
+      setDisplay([])
+      alert("All passwords deleted successfully.");
+    } catch (err) {
+      alert("An error occurred while deleting all passwords. Please try again.");
+    }
   }
 
   const safeHref = (raw) => {
@@ -107,7 +130,6 @@ const Manager = () => {
     }
   }
 
-
   const onSubmit = async (data) => {
 
     let r = await fetch("http://localhost:3000/", {
@@ -118,7 +140,6 @@ const Manager = () => {
       body: JSON.stringify(data)
     })
     let res = await r.text()
-    console.log(data)
   }
 
   return (
@@ -205,7 +226,6 @@ const Manager = () => {
 
                 <tbody>
                   {display.map((item, id) => {
-                    // if (!item || typeof item !== "object" || !("input" in item)) return null;
 
                     return (
                       <tr key={id} className="bg-green-100 border-b align-top">
@@ -235,7 +255,7 @@ const Manager = () => {
                         </td>
 
                         <td className="relative py-2 px-2 border border-white text-center max-w-[150px] break-words">
-                          <span className="w-full overflow-hidden text-center whitespace-wrap">{item.input.password}</span>
+                          <span className="w-full overflow-hidden text-center whitespace-wrap">{"*".repeat(item.input.password.length)}</span>
                           <span className='group hover:cursor-pointer absolute right-0' onClick={() => handleCopy(item.input.password)}>
                             <lord-icon
                               style={{ "width": "25px", "height": "25px", "paddingTop": "3px", "paddingLeft": "3px" }}
@@ -247,7 +267,7 @@ const Manager = () => {
                         </td>
 
                         <td className="py-2 px-2 border border-white text-center">
-                          <span className="relative hover:cursor-pointer text-black p-1 group" onClick={() => editEvent(id)}>
+                          <span className="relative hover:cursor-pointer text-black p-1 group" onClick={() => editEvent(item.id)}>
                             <lord-icon
                               src="https://cdn.lordicon.com/gwlusjdu.json"
                               trigger="hover"
@@ -274,13 +294,13 @@ const Manager = () => {
 
               <div className="md:hidden block">
                 {display.map((item, id) => {
-                  if (!item || typeof item !== "object" || !("input" in item)) return null;
+
                   return (
                     <div key={id} className="border rounded-2xl py-2 px-3 my-2.5">
 
                       <div className='relative' >
                         <span className="inline-table w-[100px]">Web Address:</span>
-                        <span className='break-all'>{item.input.text}</span>
+                        <a className="break-all" href={safeHref(item.input.text)} target="_blank" rel="noopener noreferrer">{item.input.text}</a>
                         <span className='hover:cursor-pointer group absolute right-0' onClick={() => handleCopy(item.input.text)}>
                           <lord-icon
                             style={{ "width": "25px", "height": "25px", "paddingTop": "3px", "paddingLeft": "3px" }}
@@ -306,7 +326,7 @@ const Manager = () => {
 
                       <div className='relative'>
                         <span className="inline-block w-[70px]">Password:</span>
-                        <span className='break-all'>{item.input.password}</span>
+                        <span className='break-all'>{"*".repeat(item.input.password.length)}</span>
                         <span className='hover:cursor-pointer group pl-[50px] absolute right-0' onClick={() => handleCopy(item.input.password)}>
                           <lord-icon
                             style={{ "width": "25px", "height": "25px", "paddingTop": "3px", "paddingLeft": "3px" }}
@@ -319,7 +339,7 @@ const Manager = () => {
 
                       <div className="flex gap-5 justify-between mt-2">
 
-                        <button className="group relative bg-green-400  py-0.5 px-4 rounded-[10px]" onClick={(e) => editEvent(e, item.id)}>
+                        <button className="group relative bg-green-400  py-0.5 px-4 rounded-[10px]" onClick={() => editEvent(item.id)}>
                           <lord-icon
                             src="https://cdn.lordicon.com/gwlusjdu.json"
                             trigger="hover"
@@ -328,7 +348,7 @@ const Manager = () => {
                           <span className='hidden absolute right-[20px] bottom-[30px] group-hover:inline-block ml-1 text-xs bg-gray-200 px-1 rounded'>Edit</span>
                         </button>
 
-                        <button className="group relative bg-red-600 py-0.5 px-4 rounded-[10px]" onClick={(e) => deleteEvent(e, item.id)}>
+                        <button className="group relative bg-red-600 py-0.5 px-4 rounded-[10px]" onClick={() => deleteEvent(item.id)}>
                           <lord-icon
                             src="https://cdn.lordicon.com/skkahier.json"
                             trigger="hover"
